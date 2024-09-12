@@ -1,0 +1,80 @@
+import datetime
+import csv
+from fractions import Fraction
+
+# Initialize an empty table (list of lists)
+body_proportions_storage_table = []
+
+# Define headers
+headers = ["Neck", "Bust", "Underbust", "Waist", "Lower Belly", "Hip", "Upper Arm", "Lower Arm", "Thigh", "Calf", "Timestamp"]
+
+# Function to parse mixed fractions and convert to decimal
+def parse_mixed_fraction(mixed_fraction):
+    if mixed_fraction.lower() == "na":
+        return None
+    parts = mixed_fraction.split()
+    if len(parts) == 2:
+        whole_number = int(parts[0])
+        fraction = Fraction(parts[1])
+        return whole_number + float(fraction)
+    elif len(parts) == 1:
+        try:
+            return float(Fraction(parts[0]))
+        except ValueError:
+            return float(parts[0])
+    else:
+        raise ValueError("Invalid mixed fraction format")
+
+# Function to take user input and store it in the table with a timestamp
+def add_row():
+    row = []
+    for header in headers[:-1]:  # Exclude the "Timestamp" header
+        measurement = input(f"Enter your measurement in inches for {header} as a mixed fraction (e.g., '42 3/8') or a whole number. If you are missing a value for this measurement, enter 'na'.")
+        try:
+            measurement_in_inches = parse_mixed_fraction(measurement)
+        except ValueError as e:
+            print(e)
+            return
+        row.append(measurement_in_inches)
+    
+    use_current_timestamp = input("Do you want to use the current system timestamp? (yes/no): ").strip().lower()
+    
+    if use_current_timestamp in ['yes', 'y']:
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d")
+    else:
+        manual_timestamp = input("Enter the date and time in the format YYYY-MM-DD:")
+        try:
+            # Validate the manual timestamp
+            datetime.datetime.strptime(manual_timestamp, "%Y-%m-%d")
+            timestamp = manual_timestamp
+        except ValueError:
+            print("Invalid date and time format. Using current system timestamp instead.")
+            timestamp = datetime.datetime.now().strftime("%Y-%m-%d")
+    
+    row.append(timestamp)
+    body_proportions_storage_table.append(row)
+
+    # Save the row to the CSV file immediately
+    with open('body_proportions_storage_table.csv', 'a', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(row)
+    print("Data saved to body_proportions_storage_table.csv.")
+
+# Write headers to the CSV file if it doesn't exist or is empty
+try:
+    with open('body_proportions_storage_table.csv', 'r') as csvfile:
+        pass
+except FileNotFoundError:
+    with open('body_proportions_storage_table.csv', 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(headers)
+
+# Continuously prompt the user to add rows
+while True:
+    add_row()
+    continue_input = input("Do you want to add another row? (yes/no): ").strip().lower()
+    if continue_input in ['yes', 'y']:
+        add_row()
+    else: 
+        break
+    

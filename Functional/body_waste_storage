@@ -1,0 +1,148 @@
+import datetime
+import csv
+
+# Initialize the table with headers
+body_waste_storage_table = []
+headers = ["Stool Type Number", "Stool Category", "Urine Color", "Urine Category", "Timestamp"]
+body_waste_storage_table.append(headers)
+
+# Create dictionaries for stool and urine types
+stool_types = {
+    1: 'Major Constipation',
+    2: 'Moderate Constipation',
+    3: 'Normal',
+    4: 'Ideal',
+    5: 'Mild Diarrhea',
+    6: 'Moderate Diarrhea',
+    7: 'Complete Diarrhea',
+    "na": None
+}
+
+urine_types = {
+    "Clear": "Overhydrated",
+    "Pale yellow": "Normal",
+    "Dark yellow": "Underhydrated",
+    "Orange": "Underhydrated",
+    "Dark orange or brown": "Cautioned",
+    "Dark brown or black": "Cautioned",
+    "Pink or red": "Cautioned",
+    "Blue or green": "Cautioned",
+    "Cloudy": "Cautioned",
+    "White or milky": "Cautioned"
+}
+
+# Function to take user input and fill the table
+def add_row_waste():
+    toilet_visit_current_message = (
+        "Choose the best descriptors for this visit to the toilet. "
+        "Bowel movements should be described by a numbered category from 1-7 based on the Bristol Stool Chart. "
+        "Urine color should be described by color based on a standard array of possible urine colors: clear, pale yellow, dark yellow, orange, dark orange or brown, dark brown or black, pink or red, blue or green, cloudy, white or milky."
+    )
+    print(toilet_visit_current_message)
+    
+    # Prompt user for input
+    while True: 
+        stool_type = input("Enter Stool Type Number (1-7 or na): ").strip()
+        if stool_type.isdigit():
+            stool_type = int(stool_type)
+        if stool_type in stool_types:
+            break
+        else:
+            print("Invalid stool type. Please enter a valid input from the list: ", list(stool_types.keys()))
+
+    while True:
+        urine_color = input("Enter Urine Color: ").strip()
+        if urine_color in urine_types:
+            break
+        else:
+            print("Invalid urine color. Please enter a valid color from the list: ", list(urine_types.keys()))
+    
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    stool_category = stool_types.get(stool_type, "Unknown")
+    urine_category = urine_types.get(urine_color, "Unknown")
+    
+    row = [stool_type, stool_category, urine_color, urine_category, timestamp]
+    body_waste_storage_table.append(row)
+    
+    # Save the row to the CSV file immediately
+    with open('body_waste_storage_table.csv', 'a', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(row)
+    print("Data saved to body_waste_storage_table.csv.")
+    # Continuously prompt the user to add rows
+while True:
+    add_row_waste()
+    continue_input = input("Do you want to add another row? (yes/no): ").strip().lower()
+    if continue_input in ['yes', 'y']:
+        add_row()
+    else: 
+        break
+
+# Function to take user input and fill the table for historical data
+def add_row_historical_waste():
+    toilet_visit_historical_message = (
+        "Choose the best descriptors for a prior visit to the toilet. "
+        "Bowel movements should be described by a numbered category from 1-7 based on the Bristol Stool Chart. "
+        "Urine color should be described by color based on a standard array of possible urine colors: clear, pale yellow, dark yellow, orange, dark orange or brown, dark brown or black, pink or red, blue or green, cloudy, white or milky."
+    )
+    print(toilet_visit_historical_message)
+    
+    # Prompt user for input
+    while True:
+        manual_timestamp = input("Enter the date in the format MM/DD/YY: ")
+        try:
+            # Validate the manual timestamp
+            datetime.datetime.strptime(manual_timestamp, "%m/%d/%y")
+            timestamp = manual_timestamp
+            break
+        except ValueError:
+            print("Invalid date format. Try again.")
+    
+    while True: 
+        stool_type = input("Enter Stool Type Number (1-7 or na): ").strip()
+        if stool_type.isdigit():
+            stool_type = int(stool_type)
+        if stool_type in stool_types:
+            break
+        else:
+            print("Invalid stool type. Please enter a valid input from the list: ", list(stool_types.keys()))
+
+    while True:
+        urine_color = input("Enter Urine Color: ").strip()
+        if urine_color in urine_types:
+            break
+        else:
+            print("Invalid urine color. Please enter a valid color from the list: ", list(urine_types.keys()))
+    
+    stool_category = stool_types.get(stool_type, "Unknown")
+    urine_category = urine_types.get(urine_color, "Unknown")
+    
+    row = [stool_type, stool_category, urine_color, urine_category, timestamp]
+    body_waste_storage_table.append(row)
+    
+    # Save the row to the CSV file immediately
+    with open('body_waste_storage_table.csv', 'a', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(row)
+    print("Data saved to body_waste_storage_table.csv.")
+
+# Function to choose which function to run based on user input
+def toilet_visit_picker():
+    toilet_now_or_not_now = input("Is this entry for a toilet visit that has just happened? (yes/y or no/n): ").strip().lower()
+    if toilet_now_or_not_now in ["yes", "y"]:
+        add_row_waste()
+    else:
+        add_row_historical_waste()
+
+# Write headers to the CSV file if it doesn't exist or is empty
+try:
+    with open('body_waste_storage_table.csv', 'r') as csvfile:
+        pass
+except FileNotFoundError:
+    with open('body_waste_storage_table.csv', 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(headers)
+        
+
+# Running the Python file starts with a prompt for recording an entry that just took place in real life, or to input an entry from an older journal that may or may not have a complete time with its date.
+toilet_visit_picker()

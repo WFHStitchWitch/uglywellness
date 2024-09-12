@@ -1,0 +1,53 @@
+import datetime
+import csv
+
+# Initialize an empty table (list of lists)
+blood_pressure_storage_table = []
+
+# Define headers
+headers = ["Systolic", "Diastolic", "Timestamp"]
+
+# Function to take user input and store it in the table with a timestamp
+def add_row():
+    row = input("Enter your blood pressure measurement as comma-separated numbers for the top and bottom measurements. If your device displays 120/80, for example, enter your blood pressure as '120,80': ").split(',')
+    
+    use_current_timestamp = input("Do you want to use the current system timestamp? (yes/no): ").strip().lower()
+    
+    if use_current_timestamp in ['yes', 'y']:
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    else:
+        manual_timestamp = input("Enter the date and time in the format YYYY-MM-DD HH:MM:SS: ")
+        try:
+            # Validate the manual timestamp
+            datetime.datetime.strptime(manual_timestamp, "%Y-%m-%d %H:%M:%S")
+            timestamp = manual_timestamp
+        except ValueError:
+            print("Invalid date and time format. Using current system timestamp instead.")
+            timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    
+    row.append(timestamp)
+    blood_pressure_storage_table.append(row)
+
+# Save the row to the CSV file immediately
+    with open('blood_pressure_storage_table.csv', 'a', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(row)
+    print("Data saved to blood_pressure_storage_table.csv.")
+
+
+
+# Write headers to the CSV file if it doesn't exist or is empty
+try:
+    with open('blood_pressure_storage_table.csv', 'r') as csvfile:
+        pass
+except FileNotFoundError:
+    with open('blood_pressure_storage_table.csv', 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(headers)
+
+# Continuously prompt the user to add rows
+while True:
+    add_row()
+    continue_input = input("Do you want to add another row? (yes/no): ").strip().lower()
+    if continue_input != 'yes':
+        break
