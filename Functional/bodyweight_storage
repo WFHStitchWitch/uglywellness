@@ -1,0 +1,26 @@
+import datetime
+import csv
+import os_timeanddate
+
+body_weight_storage_table = []
+headers = ["Scale Weight","Timestamp"]
+
+def add_weight_row():
+    row = input("Enter your current bodyweight: ")
+    timestamp = datetime.datetime.now().strftime("%M/%D/%Y %H:%M")
+    row.append(timestamp)
+    body_weight_storage_table.append(row)
+
+    with open('body_weight_storage_table.csv', 'a', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(row)
+    print("Bodyweight journal updated.")
+
+    try:
+        with open('body_weight_storage_table.csv', 'r') as csvfile:
+            pass
+    except FileNotFoundError:
+        with open('body_weight_storage_table.csv', 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(headers) 
+

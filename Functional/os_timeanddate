@@ -1,2 +1,49 @@
 import datetime
-timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+# Helper function to generate the date stamp
+def get_date_stamp():
+    while True:
+        choice = input("Do you want to use the current date? (yes/y or no/n): ").strip().lower()
+        if choice in ["yes", "y"]:
+            return datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+        elif choice in ["no", "n"]:
+            while True:
+                manual_date = input("Enter the date in the format MM/DD/YY: ")
+                try:
+                    # Validate the manual date
+                    datetime.datetime.strptime(manual_date, "%m/%d/%y")
+                    return manual_date
+                except ValueError:
+                    print("Invalid date format. Try again.")
+        else:
+            print("Invalid choice. Please enter 'yes/y' or 'no/n'.")
+
+# Function to take user input for a positive number and add a date stamp
+def input_positive_number():
+    while True:
+        try:
+            user_input = float(input("Enter a positive number: "))
+            if user_input > 0:
+                date_stamp = get_date_stamp()
+                return user_input, date_stamp
+            else:
+                print("Input must be greater than zero. Please try again.")
+        except ValueError:
+            print("Invalid input. Please enter a valid number.")
+
+# Function to take user input for a string and add a date stamp
+def input_string():
+    user_input = input("Enter a string: ")
+    date_stamp = get_date_stamp()
+    return user_input, date_stamp
+
+# Function to take user input for a date in MM/DD/YY format and add a date stamp
+def input_date():
+    while True:
+        user_input = input("Enter the date in the format MM/DD/YY: ")
+        try:
+            datetime.datetime.strptime(user_input, "%m/%d/%y")
+            date_stamp = get_date_stamp()
+            return user_input, date_stamp
+        except ValueError:
+            print("Invalid date format. Try again.")
