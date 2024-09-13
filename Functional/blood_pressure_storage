@@ -1,53 +1,56 @@
 import datetime
 import csv
 
-# Initialize an empty table (list of lists)
+'''Initialize an empty table. Define headers for the table columns, with the last column being named Timestamp as an expectation of each row being a uniquely dated journal entry.''' 
+
 blood_pressure_storage_table = []
+headers = ["Systolic (upper)","Diastolic (lower)","Timestamp"]
 
-# Define headers
-headers = ["Systolic", "Diastolic", "Timestamp"]
-
-# Function to take user input and store it in the table with a timestamp
-def add_row():
-    row = input("Enter your blood pressure measurement as comma-separated numbers for the top and bottom measurements. If your device displays 120/80, for example, enter your blood pressure as '120,80': ").split(',')
-    
-    use_current_timestamp = input("Do you want to use the current system timestamp? (yes/no): ").strip().lower()
-    
-    if use_current_timestamp in ['yes', 'y']:
-        timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+def add_row_bp():
+    '''Function to take user input and store it in the table with a datestamp appended at the end of the row, regardless of how many columns between 1 and x exist before arriving at the date column. The function will provide a choice to use the current system date or to manually enter a date. The journal entry will be logged as a new row into the table, saved, and there will be a choice given to create a new journal entry or to stop expecting inputs.'''
+    row = []
+    for header in headers[:-1]:
+        measurement_bp = input(f"Enter your measurement for {header}. If you are missing a value for this measurement, enter 'na'.")
+        row.append(measurement_bp)
+    # Choose if using today's date or a different date.
+    now_or_not_now = input("Use current system date and time? (y/n): ").strip().lower()
+    if now_or_not_now in ['yes', 'y']:
+        timestamp = datetime.datetime.now().strftime("%m/%d/%y %I:%M %p")
     else:
-        manual_timestamp = input("Enter the date and time in the format YYYY-MM-DD HH:MM:SS: ")
+        manual_timestamp = input("Enter the date as MM/DD/YY HH:MM AM/PM.")
+        # Validate the manual timestamp
         try:
-            # Validate the manual timestamp
-            datetime.datetime.strptime(manual_timestamp, "%Y-%m-%d %H:%M:%S")
+            datetime.datetime.strptime(manual_timestamp, "%m/%d/%y %I:%M %p")
             timestamp = manual_timestamp
         except ValueError:
-            print("Invalid date and time format. Using current system timestamp instead.")
-            timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    
+            print("Invalid date format. Try again.")
+            return
+
+    # Append the timestamp chosen to the end of the row
     row.append(timestamp)
     blood_pressure_storage_table.append(row)
 
-# Save the row to the CSV file immediately
+    # Save the row to the CSV file immediately
     with open('blood_pressure_storage_table.csv', 'a', newline='') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(row)
-    print("Data saved to blood_pressure_storage_table.csv.")
+    print("Entry logged successfully.")
 
+    # Write headers to the CSV file if it doesn't exist yet or is empty
+    try:
+        with open('blood_pressure_storage_table.csv', 'r') as csvfile:
+            pass
+    except FileNotFoundError:
+        with open('blood_pressure_storage_table.csv', 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(headers)
 
+    # Continuously prompt the user to add rows
+    while True:
+        continue_input = input("Do you want to add another entry? (y/n)").strip().lower()
+        if continue_input in ['yes', 'y']:
+            add_row_bp()
+        else:
+            break
 
-# Write headers to the CSV file if it doesn't exist or is empty
-try:
-    with open('blood_pressure_storage_table.csv', 'r') as csvfile:
-        pass
-except FileNotFoundError:
-    with open('blood_pressure_storage_table.csv', 'w', newline='') as csvfile:
-        writer = csv.writer(csvfile)
-        writer.writerow(headers)
-
-# Continuously prompt the user to add rows
-while True:
-    add_row()
-    continue_input = input("Do you want to add another row? (yes/no): ").strip().lower()
-    if continue_input != 'yes':
-        break
+add_row_bp()
