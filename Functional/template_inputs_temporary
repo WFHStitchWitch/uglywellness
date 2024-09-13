@@ -1,0 +1,55 @@
+import datetime
+import csv
+
+'''Initialize an empty table. Define headers for the table columns, with the last column being named Timestamp as an expectation of each row being a uniquely dated journal entry.''' 
+
+table = []
+headers = ["col1","col2","Timestamp"]
+
+def add_row():
+	'''Function to take user input and store it in the table with a datestamp appended at the end of the row, regardless of how many columns between 1 and x exist before arriving at the date column. The function will provide a choice to use the current system date or to manually enter a date. The journal entry will be logged as a new row into the table, saved, and there will be a choice given to create a new journal entry or to stop expecting inputs.'''
+	row = []
+	for header in headers[:-1]
+		measurement = input(f"Enter your measurement for {header} as unit. If you are missing a value for this measurement, enter 'na'.")
+		row.append(measurement)
+	#Choose if using today's date or a different date.
+	now_or_not_now = input("Use current system date and time? (y/n): ").strip.lower()
+	if now_or_not_now in ['yes', 'y']:
+		timestamp = datetime.datetime.now().strftime("%M/%D/Y%")
+	else:
+		manual_timestamp = input("Enter the date as MM/DD/YY.")
+	
+#Validate the manual timestamp
+	try:
+		datetime.datetime.strptime(manual_datestamp, "%M/%D/%Y")
+		timestamp = manual_timestamp
+	except ValueError:
+		print("Invalid date format. Try again.")
+		return manual_timestamp
+
+	#Append the timestamp chosen to the end of the row, which had other values previously input by the user in its preceding columns. Then, append the whole new row of values to the table as a new row.
+	row.append(timestamp)
+	table.append(row)	
+
+	#Save the row to the CSV file immediately
+	with open('table.csv','a', newline='') as csvfile:
+		writer = csv.writer(csvfile)
+		writer.writerow(row)
+	print("Entry logged successfully.")
+
+	#Write headers to the CSV file if it doesn't exist yet or is empty
+	try:
+		with open('table.csv', 'r') as csvfile:
+			pass
+	except FileNotFoundError:
+		with open('table.csv', 'w', newline='') as csvfile:
+			writer = csv.writer(csvfile)
+			writer.writerow(headers)
+	#Continuously prompt the user to add rows 
+	while True:
+		add_row()
+		continue_input = input("Do you want to add another entry? (y/n)").strip().lower()
+		if continue_input in ['yes','y']:
+			add_row()
+		else:
+			break
