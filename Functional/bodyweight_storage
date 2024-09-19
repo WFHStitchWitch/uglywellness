@@ -1,13 +1,28 @@
 import datetime
 import csv
-import os_timeanddate
 
 body_weight_storage_table = []
 headers = ["Scale Weight","Timestamp"]
 
-def add_weight_row():
-    row = input("Enter your current bodyweight: ")
-    timestamp = datetime.datetime.now().strftime("%M/%D/%Y %H:%M")
+def add_row_bodyweight():
+    row = []
+    measurement_bw = input("Enter your scale weight: ")
+    row.append(measurement_bw)
+    
+    # Choose if using today's date or a different date.
+    now_or_not_now = input("Use current system date and time? (y/n): ").strip().lower()
+    if now_or_not_now in ['yes', 'y']:
+        timestamp = datetime.datetime.now().strftime("%m/%d/%y %I:%M %p")
+    else:
+        manual_timestamp = input("Enter the date as MM/DD/YY HH:MM AM/PM.")
+        # Validate the manual timestamp
+        try:
+            datetime.datetime.strptime(manual_timestamp, "%m/%d/%y %I:%M %p")
+            timestamp = manual_timestamp
+        except ValueError:
+            print("Invalid date format. Try again.")
+            return
+        
     row.append(timestamp)
     body_weight_storage_table.append(row)
 
@@ -23,4 +38,14 @@ def add_weight_row():
         with open('body_weight_storage_table.csv', 'w', newline='') as csvfile:
             writer = csv.writer(csvfile)
             writer.writerow(headers) 
+    
+    # Continuously prompt the user to add rows
+    while True:
+        continue_input = input("Do you want to add another entry? (y/n)").strip().lower()
+        if continue_input in ['yes', 'y']:
+            add_row_bodyweight()
+        if continue_input in ['no', 'n']:
+            print("Entry complete.")
+            break
 
+add_row_bodyweight()
