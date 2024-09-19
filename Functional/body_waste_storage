@@ -74,7 +74,7 @@ while True:
     add_row_waste()
     continue_input = input("Do you want to add another row? (yes/no): ").strip().lower()
     if continue_input in ['yes', 'y']:
-        add_row()
+        add_row_waste()
     else: 
         break
 
@@ -146,3 +146,9 @@ except FileNotFoundError:
 
 # Running the Python file starts with a prompt for recording an entry that just took place in real life, or to input an entry from an older journal that may or may not have a complete time with its date.
 toilet_visit_picker()
+
+'''
+Problem 9/19/24:
+User input for the urine color is case sensitive and a poor method for input if the user doesn't know the options that are acceptable until after entering something wrong. 
+After the add another row prompt, it jumps to the toilet_visit_picker, plays the whole intro message and then prompts for the date. Stuff is out of order from having two different but similar functions involved. 
+'''

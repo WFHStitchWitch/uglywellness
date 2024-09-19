@@ -10,7 +10,7 @@ def add_row_hr():
     '''Function to take user input and store it in the table with a datestamp appended at the end of the row, regardless of how many columns between 1 and x exist before arriving at the date column. The function will provide a choice to use the current system date or to manually enter a date. The journal entry will be logged as a new row into the table, saved, and there will be a choice given to create a new journal entry or to stop expecting inputs.'''
     row = []
     for header in headers[:-1]:
-        measurement_hr = input(f"Enter your measurement for {header}. If you are missing a value for this measurement, enter 'na'.")
+        measurement_hr = input(f"Enter your measurement for {header}:")
         row.append(measurement_hr)
     # Choose if using today's date or a different date.
     now_or_not_now = input("Use current system date and time? (y/n): ").strip().lower()
@@ -51,6 +51,7 @@ def add_row_hr():
         if continue_input in ['yes', 'y']:
             add_row_hr()
         else:
+            print("Entry logged successfully.")
             break
 
 add_row_hr()
