@@ -1,0 +1,57 @@
+import datetime
+import csv
+
+'''Initialize an empty table. Define headers for the table columns, with the last column being named Timestamp as an expectation of each row being a uniquely dated journal entry.''' 
+
+heart_rate_storage_table = []
+headers = ["Heart Rate","Timestamp"]
+
+def add_row_hr():
+    '''Function to take user input and store it in the table with a datestamp appended at the end of the row, regardless of how many columns between 1 and x exist before arriving at the date column. The function will provide a choice to use the current system date or to manually enter a date. The journal entry will be logged as a new row into the table, saved, and there will be a choice given to create a new journal entry or to stop expecting inputs.'''
+    row = []
+    for header in headers[:-1]:
+        measurement_hr = input(f"Enter your measurement for {header}:")
+        row.append(measurement_hr)
+    # Choose if using today's date or a different date.
+    now_or_not_now = input("Use current system date and time? (y/n): ").strip().lower()
+    if now_or_not_now in ['yes', 'y']:
+        timestamp = datetime.datetime.now().strftime("%m/%d/%y %I:%M %p")
+    else:
+        manual_timestamp = input("Enter the date as MM/DD/YY HH:MM AM/PM.")
+        # Validate the manual timestamp
+        try:
+            datetime.datetime.strptime(manual_timestamp, "%m/%d/%y %I:%M %p")
+            timestamp = manual_timestamp
+        except ValueError:
+            print("Invalid date format. Try again.")
+            return
+
+    # Append the timestamp chosen to the end of the row
+    row.append(timestamp)
+    heart_rate_storage_table.append(row)
+
+    # Save the row to the CSV file immediately
+    with open('heart_rate_storage_table.csv', 'a', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(row)
+    print("Entry logged successfully.")
+
+    # Write headers to the CSV file if it doesn't exist yet or is empty
+    try:
+        with open('heart_rate_storage_table.csv', 'r') as csvfile:
+            pass
+    except FileNotFoundError:
+        with open('heart_rate_storage_table.csv', 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(headers)
+
+    # Continuously prompt the user to add rows
+    while True:
+        continue_input = input("Do you want to add another entry? (y/n)").strip().lower()
+        if continue_input in ['yes', 'y']:
+            add_row_hr()
+        else:
+            print("Entry logged successfully.")
+            break
+
+add_row_hr()

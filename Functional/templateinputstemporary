@@ -12,9 +12,11 @@ def add_row():
 	for header in headers[:-1]:
 		measurement = input(f"Enter your measurement for {header} as unit. If you are missing a value for this measurement, enter 'na'.")
 		row.append(measurement)
+	
 	# Choose if using today's date or a different date.
     now_or_not_now = input("Use current system date and time? (y/n): ").strip().lower()
-    if now_or_not_now in ['yes', 'y']:
+    
+	if now_or_not_now in ['yes', 'y']:
         timestamp = datetime.datetime.now().strftime("%m/%d/%y %I:%M %p")
     else:
         manual_timestamp = input("Enter the date as MM/DD/YY HH:MM AM/PM.")
@@ -52,4 +54,3 @@ def add_row():
 			add_row()
 		else:
 			break
-
